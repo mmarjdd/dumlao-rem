@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Estate Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4f4;
+  --surface: #ffffff;
+  --surface2: #f0ebec;
+  --text: #1a1714;
+  --text-muted: #6b6460;
+  --text-faint: #9e9893;
+  --accent: #98777b;
+  --accent-light: #f7f0f1;
+  --accent-dark: #6e5457;
+  --green: #1d6e4a;
+  --green-light: #eaf4ee;
+  --red: #b52b2b;
+  --red-light: #fbeaea;
+  --border: rgba(152,119,123,0.12);
+  --border-strong: rgba(152,119,123,0.22);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(152,119,123,0.07), 0 4px 12px rgba(152,119,123,0.06);
+  --shadow-card: 0 2px 8px rgba(152,119,123,0.09), 0 8px 24px rgba(152,119,123,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* LAYOUT */
+.app { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+/* HEADER */
+.header { margin-bottom: 2rem; }
+.header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+.logo-icon svg { fill: #fff; width: 18px; height: 18px; }
+.brand { font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 500; color: var(--text); }
+.brand span { color: var(--accent); }
+.tagline { font-size: 12px; color: var(--text-faint); margin-top: 1px; letter-spacing: .01em; }
+.sync-info { font-size: 12px; color: var(--text-faint); text-align: right; }
+.sync-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 5px; }
+.sync-dot.loading { background: #e09a30; animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; background: var(--surface2); padding: 4px; border-radius: var(--radius); }
+.tab { flex: 1; padding: 9px 16px; border-radius: calc(var(--radius) - 3px); border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; color: var(--text-muted); cursor: pointer; transition: all .18s; }
+.tab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: var(--shadow); }
+.tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,.5); }
+
+/* SECTIONS */
+.section { display: none; padding-top: 1.5rem; }
+.section.active { display: block; }
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; margin-bottom: 1rem; }
+.search-wrap input { width: 100%; height: 44px; padding: 0 44px 0 44px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border .15s, box-shadow .15s; }
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,66,26,.1); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; }
+.search-count { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-faint); }
+.filter-row { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.pill { padding: 5px 14px; border-radius: 100px; border: 1px solid var(--border-strong); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all .15s; }
+.pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pill:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+.section-label { font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+.table-block { margin-bottom: 1.5rem; }
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.55; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #faf8f4; }
+.prov-badge { display: inline-block; padding: 2px 9px; border-radius: 100px; background: var(--accent-light); color: var(--accent-dark); font-size: 11px; font-weight: 500; white-space: nowrap; }
+.no-results { text-align: center; padding: 3rem 1rem; color: var(--text-faint); font-size: 14px; }
+
+/* ── FLASHCARDS ── */
+.fc-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+.fc-counter { font-size: 13px; color: var(--text-muted); }
+.fc-hint { text-align: center; font-size: 12px; color: var(--text-faint); margin-bottom: 1.25rem; }
+
+.scene { width: 100%; height: 240px; perspective: 1200px; cursor: pointer; margin-bottom: 1.25rem; }
+.card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4,0,.2,1); }
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.75rem; text-align: center; transition: box-shadow .2s; }
+.card-face:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1), 0 12px 32px rgba(0,0,0,.08); }
+.card-back { transform: rotateY(180deg); background: var(--accent-light); border-color: rgba(152,119,123,.18); }
+.card-type-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--text-faint); margin-bottom: 10px; }
+.card-back .card-type-label { color: var(--accent); }
+.card-main { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; color: var(--text); line-height: 1.55; margin-bottom: 8px; }
+.card-back .card-main { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400; color: var(--text); line-height: 1.65; }
+.card-sub { font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+.card-back .card-sub { font-size: 11px; color: var(--accent-dark); font-weight: 500; margin-top: 10px; background: rgba(152,119,123,.1); padding: 4px 12px; border-radius: 100px; }
+
+.nav-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.nav-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; color: var(--text); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all .15s; box-shadow: var(--shadow); }
+.nav-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #fff; }
+.nav-btn:disabled { opacity: .3; cursor: default; box-shadow: none; }
+.nav-prog { font-size: 13px; color: var(--text-muted); min-width: 64px; text-align: center; }
+
+/* ── QUIZ ── */
+.quiz-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; flex-wrap: wrap; gap: 8px; }
+.quiz-score-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 4px 14px; font-size: 12px; color: var(--text-muted); box-shadow: var(--shadow); }
+.prog-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease; }
+.q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-card); }
+.q-num { font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+.q-text { font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 400; color: var(--text); line-height: 1.55; margin-bottom: 1.25rem; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+@media (max-width: 500px) { .choices { grid-template-columns: 1fr; } }
+.choice { padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); cursor: pointer; text-align: left; line-height: 1.45; transition: all .15s; outline: none; }
+.choice:hover:not(.disabled) { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+.choice.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); }
+.choice.correct { background: var(--green-light) !important; border-color: var(--green) !important; color: var(--green) !important; }
+.choice.wrong { background: var(--red-light) !important; border-color: var(--red) !important; color: var(--red) !important; }
+.choice.disabled { cursor: default; }
+.q-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.q-feedback { font-size: 13px; color: var(--text-faint); }
+.q-feedback.ok { color: var(--green); font-weight: 500; }
+.q-feedback.no { color: var(--red); font-weight: 500; }
+.submit-btn { padding: 10px 24px; border-radius: var(--radius-sm); border: none; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+.submit-btn:hover:not(:disabled) { background: var(--accent-dark); }
+.submit-btn:disabled { opacity: .4; cursor: default; }
+.next-btn { padding: 10px 24px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); cursor: pointer; transition: all .15s; }
+.next-btn:hover { background: var(--surface2); }
+.final-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 3rem 1.5rem; text-align: center; box-shadow: var(--shadow-card); }
+.final-score { font-family: 'DM Sans', sans-serif; font-size: 56px; font-weight: 300; color: var(--accent); margin-bottom: 4px; }
+.final-label { font-size: 15px; color: var(--text-muted); margin-bottom: 1.5rem; }
+.retry-btn { padding: 11px 32px; border-radius: var(--radius-sm); border: none; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+.retry-btn:hover { background: var(--accent-dark); }
+
+/* SPINNER */
+.spinner { text-align: center; padding: 3rem; color: var(--text-faint); font-size: 13px; }
+
+/* SWIPE ANIM */
+.scene.swipe-left { animation: swipeL .22s ease forwards; }
+.scene.swipe-right { animation: swipeR .22s ease forwards; }
+@keyframes swipeL { 0%{transform:translateX(0);opacity:1} 100%{transform:translateX(-40px);opacity:0} }
+@keyframes swipeR { 0%{transform:translateX(0);opacity:1} 100%{transform:translateX(40px);opacity:0} }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .app { padding: 1.25rem 1rem 3rem; }
+  .card-main { font-size: 14px; }
+  .q-text { font-size: 16px; }
+  .header-top { flex-direction: column; }
+  .sync-info { text-align: left; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        <div>
+          <div class="brand">Real Estate Management <span>Reviewer</span></div>
+          <div class="tagline">Terms and Provisions · Engr. Dumlao</div>
+        </div>
+      </div>
+      <div class="sync-info" id="syncInfo">
+        <span class="sync-dot loading" id="syncDot"></span>
+        <span id="syncText">Loading data…</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('search',this)">Search</button>
+      <button class="tab" onclick="switchTab('flash',this)">Flashcards</button>
+      <button class="tab" onclick="switchTab('quiz',this)">Quiz</button>
+    </div>
+  </div>
+
+  <div id="search" class="section active">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input type="text" id="searchInput" placeholder="Search provisions, titles, terms…" oninput="doSearch()">
+      <span class="search-count" id="searchCount"></span>
+    </div>
+    <div class="filter-row">
+      <button class="pill active" onclick="setSearchFilter('all',this)">All</button>
+      <button class="pill" onclick="setSearchFilter('laws',this)">Laws only</button>
+      <button class="pill" onclick="setSearchFilter('terms',this)">Terms only</button>
+    </div>
+    <div id="searchResults"><div class="spinner">Loading…</div></div>
+  </div>
+
+  <div id="flash" class="section">
+    <div class="fc-controls">
+      <div class="filter-row" style="margin:0">
+        <button class="pill active" onclick="setFCFilter('terms',this)">Terms</button>
+        <button class="pill" onclick="setFCFilter('laws',this)">Laws</button>
+        <button class="pill" onclick="setFCFilter('all',this)">All</button>
+      </div>
+      <div class="fc-counter" id="fcCounter"></div>
+    </div>
+    <div class="fc-hint">Tap card to reveal · swipe or use arrows to navigate</div>
+    <div class="scene" id="fcScene" onclick="flipCard()">
+      <div class="card-inner" id="fcInner">
+        <div class="card-face card-front">
+          <div class="card-type-label" id="fcFrontLabel">Definition</div>
+          <div class="card-main" id="fcFrontMain"></div>
+          <div class="card-sub" id="fcFrontSub"></div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-type-label">Term</div>
+          <div class="card-main" id="fcBackMain"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" id="fcPrev" onclick="moveCard(-1)">&#8592;</button>
+      <div class="nav-prog" id="fcProg"></div>
+      <button class="nav-btn" id="fcNext" onclick="moveCard(1)">&#8594;</button>
+    </div>
+  </div>
+
+  <div id="quiz" class="section">
+    <div class="quiz-top">
+      <div class="filter-row" style="margin:0">
+        <button class="pill active" onclick="setQFilter('all',this)">All</button>
+        <button class="pill" onclick="setQFilter('laws',this)">Laws</button>
+        <button class="pill" onclick="setQFilter('terms',this)">Terms</button>
+      </div>
+      <div class="quiz-score-pill" id="quizScore">0 correct</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="qProgFill" style="width:0"></div></div>
+    <div id="quizContainer"><div class="spinner">Loading…</div></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIGURATION — paste your published Google Sheet CSV URLs here
+// ═══════════════════════════════════════════════
+// How to get these URLs:
+// 1. Open your Google Sheet
+// 2. File → Share → Publish to web
+// 3. Choose the sheet tab, select "Comma-separated values (.csv)"
+// 4. Click Publish and copy the link
+// Replace the URLs below with your actual published CSV links
+
+const SHEET_LAWS_URL = 'YOUR_LAWS_SHEET_CSV_URL_HERE';
+const SHEET_TERMS_URL = 'YOUR_TERMS_SHEET_CSV_URL_HERE';
+
+// FALLBACK DATA (used if Google Sheet is not configured or fails to load)
+const FALLBACK_LAWS = [
+  ['RA 9646','Real Estate Service Act of the Philippines','Governs appraisers & brokers; qualifications, duties, limitation'],
+  ['RA 4726',"Subdivision & Condominium Buyers' Protective Decree",'Rules for subdivision & condo development; affects property appraisal & valuation'],
+  ['RA 8974','Condominium Act','Ownership, condo units, declaration of restrictions; use in appraisal of condos'],
+  ['Civil Code (1950)','Property & Contracts','Ownership types, co-ownership, easements, mortgages, sale, lease; fundamental for valuation'],
+  ['Family Code (1988)','Conjugal Property / Marriage','Conjugal vs exclusive property; affects appraisal if owned by married parties'],
+  ['RA 9184','Government Procurement Reform Act','Valuation in government projects / procurement; sometimes in DPWH-related REA scenarios'],
+  ['RA 10963','TRAIN Law','Property tax computation / adjustment; high-yield for property valuation & assessment'],
+  ['Local Ordinances / LGU Zoning','Zoning & Real Estate Regulation','Zoning rules, classification of property; essential for appraisal & feasibility'],
+  ['PD 957','Subdivision & Condominium Buyers Protection','Similar to RA 4726, sometimes referenced; ensures developer compliance'],
+  ['EO 648','Rules on Valuation of Properties for Taxation','Local appraisal / assessment guidance; computation & methodology'],
+  ['RA 7160','Local Government Code of 1991','Governs LGU powers, duties, and responsibilities; affects property assessment, taxation, zoning, and real estate operations'],
+  ['RA 9856','Real Estate Investment Trust (REIT) Act of 2020','Rules on REITs; relevant for commercial property appraisal and investment valuation'],
+  ['RA 12001','Real Property Valuation and Assessment Reform Act (RPVARA)','Standardize Real Property Valuation in the Philippines'],
+];
+const FALLBACK_TERMS = [
+  ['Appraiser','Also known as valuer, refers to a person who conducts valuation; specifically, one who possesses the necessary qualifications, license, ability, and experience to execute or direct the valuation of real property.','RPVARA (RA 12001), RESA Law'],
+  ['Assessed Value','Also known as taxable value, refers to the market value of the property multiplied by the corresponding assessment level.','RPVARA (RA 12001)'],
+  ['Assessment','Refers to the act or process of determining the value of a property, or proportion thereof subject to taxation, including the discovery, listing, classification, and appraisal of properties.','RPVARA (RA 12001)'],
+  ['Assessment Level','Refers to the percentage applied to the market value to determine the taxable value of the property based on property classifications as prescribed in RA No. 7160.','RPVARA (RA 12001)'],
+  ['Assessor','Refers to the official or employee in the LGU who is duly licensed appraiser, and performs appraisal and assessment of real properties, including plant, machinery, and equipment.','RPVARA (RA 12001), RESA Law'],
+  ['Building','Refers to a man-made structure permanently attached to land for residential, commercial, industrial, recreational, or other purposes.','RPVARA (RA 12001)'],
+  ['Depreciation','Refers to reasonable allowance for the exhaustion, wear and tear (including reasonable allowance for obsolescence) of property.','RPVARA (RA 12001)'],
+  ['Improvement','A valuable addition made to a property or an amelioration in its condition, amounting to more than a mere repair or replacement of parts, intended to enhance value or utility.','RPVARA (RA 12001)'],
+  ['International Valuation Standards','Standards for undertaking valuation assessments using generally recognized concepts and principles that promote transparency and consistency.','RPVARA (RA 12001)'],
+  ['Philippine Valuation Standards (PVS)','The latest national standards designed for use in the Philippines, based upon International Valuation Standards approved by the Secretary of Finance.','RPVARA (RA 12001)'],
+  ['Machinery','Machines, mechanical contrivances, or apparatus attached permanently or temporarily to real property, including facilities for production and installations.','RPVARA (RA 12001)'],
+  ['Market Value',"The estimated amount for which a real property shall exchange on the valuation date between a willing buyer and a willing seller in an arm's length transaction.",'RPVARA (RA 12001)'],
+  ['Private Appraisal Sector','Refers to licensed nongovernmental real estate service practitioners.','RPVARA (RA 12001)'],
+  ['Real Estate','The land and all those items which are attached to the land. It is the physical, tangible entity, together with all the additions or improvements on, above or below the ground.','RPVARA (RA 12001), RESA Law'],
+  ['Real Property','Refers to all the rights, interests and benefits related to the ownership of real estate.','RPVARA (RA 12001), RESA Law'],
+  ['Schedule of Market Values (SMV)','A table of base unit market value for all kinds of real property, except machinery within an LGU, prepared by assessors pursuant to existing laws.','RPVARA (RA 12001)'],
+  ['Special Purpose Property','Property designed and developed for a specific use that is rarely offered for sale in the open market except as part of a going concern.','RPVARA (RA 12001)'],
+  ['Valuation','Also known as appraisal, refers to the systematic, analytic and logical analysis of property facts resulting in a supportable estimate of value.','RPVARA (RA 12001)'],
+  ['Real Estate Development Project','The development of land for residential, commercial, industrial, agricultural, institutional or recreational purposes, or any combination of such including, but not limited to, tourist resorts, reclamation projects, building or housing projects, whether for individual or condominium ownership, memorial parks and others of similar nature.','RESA Law'],
+  ['Real Estate Developer','Any natural or juridical person engaged in the business of developing real estate development project for his/her or its own account and offering them for sale or lease.','RESA Law'],
+  ['Real Estate Service Practitioners','Refer to the Consultant, Appraiser, Assessor, Broker, Salesperson','RESA Law'],
+  ['Real Estate Consultant','A duly registered and licensed natural person who, for a professional fee, compensation or other valuable consideration, offers or renders professional advice and judgment on: (i) the acquisition, enhancement, preservation, utilization or disposition of lands or improvements thereon; and (ii) the conception, planning, management and development of real estate projects.','RESA Law'],
+  ['Real Estate Appraiser','A duly registered and licensed natural person who, for a professional fee, compensation or other valuable consideration, performs or renders, or offers to perform services in estimating and arriving at an opinion of or acts as an expert on real estate values, such services of which shall be finally rendered by the preparation of the report in acceptable written form.','RESA Law'],
+  ['Real Estate Assessor','A duly registered and licensed natural person who works in a local government unit and performs appraisal and assessment of real properties, including plants, equipment, and machineries, essentially for taxation purposes.','RESA Law'],
+  ['Real Estate Broker','A duly registered and licensed natural person who, for a professional fee, commission or other valuable consideration, acts as an agent of a party in a real estate transaction to offer, advertise, solicit, list, promote, mediate, negotiate or effect the meeting of the minds on the sale, purchase, exchange, mortgage, lease or joint venture, or other similar transactions on real estate or any interest therein.','RESA Law'],
+  ['Real Estate Salesperson','A duly accredited natural person who performs service for, and in behalf of, a real estate broker who is registered and licensed by the Professional Regulatory Board of Real Estate Service for or in expectation of a share in the commission, professional fee, compensation or other valuable consideration.','RESA Law'],
+];
+
+// ═══════════════════════════════════════════════
+// DATA STATE
+// ═══════════════════════════════════════════════
+let LAWS = [];
+let TERMS = [];
+let dataReady = false;
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.trim().split('\n');
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let c = 0; c < line.length; c++) {
+      if (line[c] === '"' && !inQ) { inQ = true; continue; }
+      if (line[c] === '"' && inQ && line[c+1] === '"') { cur += '"'; c++; continue; }
+      if (line[c] === '"' && inQ) { inQ = false; continue; }
+      if (line[c] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; continue; }
+      cur += line[c];
+    }
+    cols.push(cur.trim());
+    if (cols.filter(Boolean).length >= 2) rows.push(cols);
+  }
+  return rows;
+}
+
+async function loadData() {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  dot.className = 'sync-dot loading';
+  txt.textContent = 'Loading data…';
+
+  let lawsLoaded = false, termsLoaded = false;
+
+  if (SHEET_LAWS_URL && SHEET_LAWS_URL !== 'YOUR_LAWS_SHEET_CSV_URL_HERE') {
+    try {
+      const r = await fetch(SHEET_LAWS_URL + '&t=' + Date.now());
+      const text = await r.text();
+      const rows = parseCSV(text);
+      if (rows.length > 0) { LAWS = rows; lawsLoaded = true; }
+    } catch(e) { console.warn('Laws sheet failed:', e); }
+  }
+  if (!lawsLoaded) LAWS = FALLBACK_LAWS;
+
+  if (SHEET_TERMS_URL && SHEET_TERMS_URL !== 'YOUR_TERMS_SHEET_CSV_URL_HERE') {
+    try {
+      const r = await fetch(SHEET_TERMS_URL + '&t=' + Date.now());
+      const text = await r.text();
+      const rows = parseCSV(text);
+      if (rows.length > 0) { TERMS = rows; termsLoaded = true; }
+    } catch(e) { console.warn('Terms sheet failed:', e); }
+  }
+  if (!termsLoaded) TERMS = FALLBACK_TERMS;
+
+  const live = lawsLoaded && termsLoaded;
+  dot.className = 'sync-dot' + (live ? '' : ' error');
+  txt.textContent = live
+    ? `Live · ${LAWS.length} laws, ${TERMS.length} terms`
+    : `Offline · ${LAWS.length} laws, ${TERMS.length} terms`;
+
+  dataReady = true;
+  doSearch();
+  buildDeck();
+  buildQuiz();
+}
+
+// ═══════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════
+let searchFilter = 'all';
+function setSearchFilter(f, btn) {
+  searchFilter = f;
+  document.querySelectorAll('#search .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  doSearch();
+}
+function hl(text, q) {
+  if (!q) return text;
+  const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return String(text).replace(re, '<mark style="background:#fff0cc;border-radius:2px;padding:0 1px">$1</mark>');
+}
+function doSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const el = document.getElementById('searchResults');
+  if (!dataReady) { el.innerHTML = '<div class="spinner">Loading…</div>'; return; }
+  let html = '', total = 0;
+
+  if (searchFilter !== 'terms') {
+    const rows = LAWS.filter(r => !q || (r[0]||'').toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q) || (r[2]||'').toLowerCase().includes(q));
+    total += rows.length;
+    if (rows.length) {
+      html += `<div class="table-block"><div class="section-label">Laws (${rows.length})</div><div class="table-wrap"><table>
+        <thead><tr><th style="width:150px">Provision</th><th>Title</th><th>Notes</th></tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted)">${hl(r[2]||'',q)}</td></tr>`;
+      });
+      html += '</tbody></table></div></div>';
+    }
+  }
+  if (searchFilter !== 'laws') {
+    const rows = TERMS.filter(r => !q || (r[0]||'').toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q) || (r[2]||'').toLowerCase().includes(q));
+    total += rows.length;
+    if (rows.length) {
+      html += `<div class="table-block"><div class="section-label">Terms (${rows.length})</div><div class="table-wrap"><table>
+        <thead><tr><th style="width:180px">Term</th><th>Definition</th><th style="width:160px">Source</th></tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted);font-size:12px">${hl(r[2]||'',q)}</td></tr>`;
+      });
+      html += '</tbody></table></div></div>';
+    }
+  }
+  if (!html) html = `<div class="no-results">No results found${q ? ` for "<strong>${q}</strong>"` : ''}</div>`;
+  document.getElementById('searchCount').textContent = q ? `${total} found` : '';
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════════════
+let fcFilter = 'terms', fcDeck = [], fcIdx = 0, fcFlipped = false;
+
+function buildDeck() {
+  if (!dataReady) return;
+  let raw = [];
+  if (fcFilter === 'all' || fcFilter === 'terms') {
+    TERMS.forEach(r => raw.push({ type:'term', front: r[1]||'', frontSub: r[2]||'', back: r[0]||'' }));
+  }
+  if (fcFilter === 'all' || fcFilter === 'laws') {
+    LAWS.forEach(r => raw.push({ type:'law', front: r[0]||'', frontSub: r[2]||'', back: r[1]||'' }));
+  }
+  fcDeck = raw;
+  fcIdx = 0;
+  fcFlipped = false;
+  renderCard();
+}
+
+function setFCFilter(f, btn) {
+  fcFilter = f;
+  document.querySelectorAll('#flash .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  buildDeck();
+}
+
+function renderCard() {
+  if (!fcDeck.length) return;
+  const c = fcDeck[fcIdx];
+  document.getElementById('fcInner').classList.remove('flipped');
+  fcFlipped = false;
+
+  if (c.type === 'term') {
+    document.getElementById('fcFrontLabel').textContent = 'Definition';
+    document.getElementById('fcFrontMain').style.fontFamily = "'DM Sans', sans-serif";
+    document.getElementById('fcFrontMain').style.fontSize = '14px';
+    document.getElementById('fcFrontMain').style.fontWeight = '400';
+    document.getElementById('fcFrontMain').style.lineHeight = '1.65';
+    document.getElementById('fcBackMain').style.fontFamily = "'DM Sans', sans-serif";
+    document.getElementById('fcBackMain').style.fontSize = '18px';
+    document.getElementById('fcBackMain').style.fontWeight = '500';
+    document.querySelector('.card-back .card-type-label').textContent = 'Term';
+  } else {
+    document.getElementById('fcFrontLabel').textContent = 'Provision';
+    document.getElementById('fcFrontMain').style.fontFamily = "'DM Sans', sans-serif";
+    document.getElementById('fcFrontMain').style.fontSize = '20px';
+    document.getElementById('fcFrontMain').style.fontWeight = '500';
+    document.getElementById('fcFrontMain').style.lineHeight = '1.35';
+    document.querySelector('.card-back .card-type-label').textContent = 'Title';
+    document.getElementById('fcBackMain').style.fontFamily = "'DM Sans', sans-serif";
+    document.getElementById('fcBackMain').style.fontSize = '14px';
+    document.getElementById('fcBackMain').style.fontWeight = '400';
+  }
+
+  document.getElementById('fcFrontMain').textContent = c.front;
+  document.getElementById('fcFrontSub').textContent = c.frontSub;
+  document.getElementById('fcBackMain').textContent = c.back;
+  document.getElementById('fcProg').textContent = `${fcIdx+1} / ${fcDeck.length}`;
+  document.getElementById('fcCounter').textContent = `${fcDeck.length} cards`;
+  document.getElementById('fcPrev').disabled = fcIdx === 0;
+  document.getElementById('fcNext').disabled = fcIdx === fcDeck.length - 1;
+}
+
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('fcInner').classList.toggle('flipped', fcFlipped);
+}
+
+function moveCard(dir) {
+  const next = fcIdx + dir;
+  if (next < 0 || next >= fcDeck.length) return;
+  const scene = document.getElementById('fcScene');
+  scene.classList.add(dir > 0 ? 'swipe-left' : 'swipe-right');
+  setTimeout(() => {
+    scene.classList.remove('swipe-left','swipe-right');
+    fcIdx = next;
+    renderCard();
+  }, 200);
+}
+
+// Swipe support
+let tsX = 0;
+document.getElementById('fcScene').addEventListener('touchstart', e => { tsX = e.touches[0].clientX; }, {passive:true});
+document.getElementById('fcScene').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tsX;
+  if (Math.abs(dx) > 45) moveCard(dx < 0 ? 1 : -1);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  const flashActive = document.getElementById('flash').classList.contains('active');
+  if (flashActive) {
+    if (e.key === 'ArrowRight') moveCard(1);
+    if (e.key === 'ArrowLeft') moveCard(-1);
+    if (e.key === ' ') { e.preventDefault(); flipCard(); }
+  }
+});
+
+// ═══════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════
+let qFilter = 'all', qDeck = [], qIdx = 0, qScore = 0, qAnswered = false, qSelected = null;
+
+function buildQuizDeck() {
+  let pool = [];
+  if (qFilter !== 'terms') LAWS.forEach(r => pool.push({ type:'law', q: `What is ${r[0]}?`, a: r[1]||'', extra:[r[2]||''] }));
+  if (qFilter !== 'laws') TERMS.forEach(r => pool.push({ type:'term', q: r[1]||'', a: r[0]||'', extra:[r[2]||''] }));
+  return shuffle([...pool]);
+}
+
+function setQFilter(f, btn) {
+  qFilter = f;
+  document.querySelectorAll('#quiz .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  buildQuiz();
+}
+
+function buildQuiz() {
+  if (!dataReady) return;
+  qDeck = buildQuizDeck();
+  qIdx = 0; qScore = 0; qAnswered = false; qSelected = null;
+  document.getElementById('qProgFill').style.width = '0%';
+  document.getElementById('quizScore').textContent = '0 correct';
+  renderQuestion();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function getDistractors(correct, n) {
+  let pool = [];
+  if (qFilter !== 'terms') LAWS.forEach(r => { if (r[1] !== correct.a) pool.push(r[1]||''); });
+  if (qFilter !== 'laws') TERMS.forEach(r => { if (r[0] !== correct.a) pool.push(r[0]||''); });
+  return shuffle(pool).slice(0, n);
+}
+
+function renderQuestion() {
+  if (qIdx >= qDeck.length) { renderFinal(); return; }
+  const curr = qDeck[qIdx];
+  const distractors = getDistractors(curr, 3);
+  const choices = shuffle([curr.a, ...distractors]);
+  const pct = Math.round((qIdx / qDeck.length) * 100);
+  document.getElementById('qProgFill').style.width = pct + '%';
+
+  const isLaw = curr.type === 'law';
+  const qLabel = isLaw ? `<strong>${curr.q.replace('What is ','').replace('?','')}</strong> — what is this law?` : 'Which term matches this definition?';
+
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="q-card">
+      <div class="q-num">Question ${qIdx+1} of ${qDeck.length} · ${isLaw ? 'Law' : 'Term'}</div>
+      <div class="q-text">${curr.q}</div>
+      <div class="choices" id="choicesGrid">
+        ${choices.map((c,i) => `<button class="choice" data-val="${escA(c)}" onmouseenter="hoverChoice(this)" onmouseleave="unhoverChoice(this)" onclick="selectChoice(this,'${escA(c)}')">${c}</button>`).join('')}
+      </div>
+      <div class="q-footer">
+        <div class="q-feedback" id="qFeedback"></div>
+        <div>
+          <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>Submit</button>
+        </div>
+      </div>
+    </div>`;
+  qAnswered = false; qSelected = null;
+}
+
+function escA(s) { return s.replace(/'/g,"&#39;").replace(/"/g,"&quot;"); }
+
+function hoverChoice(btn) {
+  if (qAnswered || btn.classList.contains('selected')) return;
+  btn.style.background = 'var(--surface2)';
+  btn.style.borderColor = 'var(--accent)';
+  btn.style.color = 'var(--accent)';
+}
+function unhoverChoice(btn) {
+  if (qAnswered || btn.classList.contains('selected')) return;
+  btn.style.background = '';
+  btn.style.borderColor = '';
+  btn.style.color = '';
+}
+
+function selectChoice(btn, val) {
+  if (qAnswered) return;
+  document.querySelectorAll('.choice').forEach(b => {
+    b.classList.remove('selected');
+    b.style.background = ''; b.style.borderColor = ''; b.style.color = '';
+  });
+  btn.classList.add('selected');
+  btn.style.background = 'var(--accent-light)';
+  btn.style.borderColor = 'var(--accent)';
+  btn.style.color = 'var(--accent-dark)';
+  qSelected = val;
+  document.getElementById('submitBtn').disabled = false;
+}
+
+function submitAnswer() {
+  if (!qSelected || qAnswered) return;
+  qAnswered = true;
+  const curr = qDeck[qIdx];
+  const correct = curr.a;
+  const isRight = qSelected === correct || qSelected.replace(/&#39;/g,"'").replace(/&quot;/g,'"') === correct;
+  if (isRight) qScore++;
+
+  document.querySelectorAll('.choice').forEach(btn => {
+    btn.classList.add('disabled');
+    btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = '';
+    const v = btn.dataset.val;
+    if (v === correct) { btn.classList.add('correct'); }
+    else if (btn.classList.contains('selected') && !isRight) { btn.classList.add('wrong'); }
+    btn.classList.remove('selected');
+  });
+
+  const fb = document.getElementById('qFeedback');
+  fb.textContent = isRight ? 'Correct!' : 'Incorrect.';
+  fb.className = 'q-feedback ' + (isRight ? 'ok' : 'no');
+  document.getElementById('quizScore').textContent = `${qScore} correct`;
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.textContent = qIdx < qDeck.length - 1 ? 'Next →' : 'See results';
+  submitBtn.disabled = false;
+  submitBtn.onclick = nextQuestion;
+}
+
+function nextQuestion() {
+  qIdx++;
+  renderQuestion();
+}
+
+function renderFinal() {
+  document.getElementById('qProgFill').style.width = '100%';
+  const pct = Math.round((qScore / qDeck.length) * 100);
+  const msg = pct >= 80 ? 'Excellent work!' : pct >= 60 ? 'Good effort!' : 'Keep studying!';
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="final-card">
+      <div class="final-score">${pct}%</div>
+      <div class="final-label">${qScore} of ${qDeck.length} correct · ${msg}</div>
+      <button class="retry-btn" onclick="buildQuiz()">Retry quiz</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+loadData();
+</script>
+</body>
+</html>
