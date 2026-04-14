@@ -81,9 +81,9 @@ body {
 
 .section-label { font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
 .table-block { margin-bottom: 1.5rem; }
-.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); }
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow); }
+table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); white-space: nowrap; }
 td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.55; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #faf8f4; }
@@ -145,10 +145,13 @@ tr:hover td { background: #faf8f4; }
 .retry-btn { padding: 11px 32px; border-radius: var(--radius-sm); border: none; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
 .retry-btn:hover { background: var(--accent-dark); }
 
+/* MOBILE BANNER */
+.mobile-banner { display: none; background: var(--accent-light); border: 1px solid rgba(152,119,123,.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 1.25rem; font-size: 12px; color: var(--accent-dark); line-height: 1.5; }
+.mobile-banner strong { font-weight: 500; }
+@media (max-width: 768px) { .mobile-banner { display: block; } }
+
 /* SPINNER */
 .spinner { text-align: center; padding: 3rem; color: var(--text-faint); font-size: 13px; }
-
-/* SWIPE ANIM */
 .scene.swipe-left { animation: swipeL .22s ease forwards; }
 .scene.swipe-right { animation: swipeR .22s ease forwards; }
 @keyframes swipeL { 0%{transform:translateX(0);opacity:1} 100%{transform:translateX(-40px);opacity:0} }
@@ -161,16 +164,25 @@ tr:hover td { background: #faf8f4; }
   .q-text { font-size: 16px; }
   .header-top { flex-direction: column; }
   .sync-info { text-align: left; }
+  .scene { height: 260px; }
+  .card-face { padding: 1.25rem; }
+  .tabs { gap: 3px; }
+  .tab { padding: 8px 10px; font-size: 12px; }
+  .choices { grid-template-columns: 1fr; }
+  .final-score { font-size: 44px; }
 }
 </style>
 </head>
 <body>
 <div class="app">
+<div class="mobile-banner">
+    📱 <strong>To access on iPhone / iPad:</strong> This file must be hosted online. Upload it to <strong>Netlify Drop</strong> (netlify.com/drop) — drag the HTML file, get a live link in seconds. Then open that link on any device.
+  </div>
   <div class="header">
     <div class="header-top">
       <div class="logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
         <div>
           <div class="brand">Real Estate Management <span>Reviewer</span></div>
@@ -260,8 +272,8 @@ tr:hover td { background: #faf8f4; }
 // 4. Click Publish and copy the link
 // Replace the URLs below with your actual published CSV links
 
-const SHEET_LAWS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRM19fQhGFYStNoXavv8l2dm7PqKwgGQR6qI_ThGHvpZFDkmnZYp7RX34BRkxoIf8xra00nSyS3axrl/pub?gid=0&single=true&output=csv';
-const SHEET_TERMS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRM19fQhGFYStNoXavv8l2dm7PqKwgGQR6qI_ThGHvpZFDkmnZYp7RX34BRkxoIf8xra00nSyS3axrl/pub?gid=967361332&single=true&output=csv';
+const SHEET_LAWS_URL = 'YOUR_LAWS_SHEET_CSV_URL_HERE';
+const SHEET_TERMS_URL = 'YOUR_TERMS_SHEET_CSV_URL_HERE';
 
 // FALLBACK DATA (used if Google Sheet is not configured or fails to load)
 const FALLBACK_LAWS = [
