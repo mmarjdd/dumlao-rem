@@ -84,7 +84,7 @@ body {
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow); }
 table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
 th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); white-space: nowrap; }
-td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.55; }
+td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.55; text-align: justify; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #faf8f4; }
 .prov-badge { display: inline-block; padding: 2px 9px; border-radius: 100px; background: var(--accent-light); color: var(--accent-dark); font-size: 11px; font-weight: 500; white-space: nowrap; }
@@ -272,8 +272,8 @@ tr:hover td { background: #faf8f4; }
 // 4. Click Publish and copy the link
 // Replace the URLs below with your actual published CSV links
 
-const SHEET_LAWS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRM19fQhGFYStNoXavv8l2dm7PqKwgGQR6qI_ThGHvpZFDkmnZYp7RX34BRkxoIf8xra00nSyS3axrl/pub?gid=0&single=true&output=csv';
-const SHEET_TERMS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRM19fQhGFYStNoXavv8l2dm7PqKwgGQR6qI_ThGHvpZFDkmnZYp7RX34BRkxoIf8xra00nSyS3axrl/pub?gid=967361332&single=true&output=csv';
+const SHEET_LAWS_URL = 'YOUR_LAWS_SHEET_CSV_URL_HERE';
+const SHEET_TERMS_URL = 'YOUR_TERMS_SHEET_CSV_URL_HERE';
 
 // FALLBACK DATA (used if Google Sheet is not configured or fails to load)
 const FALLBACK_LAWS = [
@@ -426,7 +426,7 @@ function doSearch() {
       html += `<div class="table-block"><div class="section-label">Laws (${rows.length})</div><div class="table-wrap"><table>
         <thead><tr><th style="width:150px">Provision</th><th>Title</th><th>Notes</th></tr></thead><tbody>`;
       rows.forEach(r => {
-        html += `<tr><td><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted)">${hl(r[2]||'',q)}</td></tr>`;
+        html += `<tr><td style="text-align:left"><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted)">${hl(r[2]||'',q)}</td></tr>`;
       });
       html += '</tbody></table></div></div>';
     }
@@ -436,9 +436,9 @@ function doSearch() {
     total += rows.length;
     if (rows.length) {
       html += `<div class="table-block"><div class="section-label">Terms (${rows.length})</div><div class="table-wrap"><table>
-        <thead><tr><th style="width:180px">Term</th><th>Definition</th><th style="width:160px">Source</th></tr></thead><tbody>`;
+        <thead><tr><th style="width:160px">Term</th><th>Definition</th><th style="width:140px">Source</th></tr></thead><tbody>`;
       rows.forEach(r => {
-        html += `<tr><td><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted);font-size:12px">${hl(r[2]||'',q)}</td></tr>`;
+        html += `<tr><td style="text-align:left"><span class="prov-badge">${hl(r[0]||'',q)}</span></td><td>${hl(r[1]||'',q)}</td><td style="color:var(--text-muted);font-size:12px;text-align:left">${hl(r[2]||'',q)}</td></tr>`;
       });
       html += '</tbody></table></div></div>';
     }
